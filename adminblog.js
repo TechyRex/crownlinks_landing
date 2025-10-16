@@ -1,454 +1,278 @@
-// Admin blog functionality for adminblog.html
-document.addEventListener('DOMContentLoaded', function() {
-    const blogPostForm = document.getElementById('blog-post-form');
-    const editPostForm = document.getElementById('edit-post-form');
-    const postsTableBody = document.getElementById('posts-table-body');
-    const postsSearch = document.getElementById('posts-search');
-    const postsPagination = document.getElementById('postsPagination');
-    const uploadImageBtn = document.getElementById('upload-image-btn');
-    const imagePreview = document.getElementById('imagePreview');
-    const editImagePreview = document.getElementById('editImagePreview');
-    const formMessage = document.getElementById('form-message');
-    const modal = document.getElementById('edit-post-modal');
-    
-    let currentPage = 1;
-    const postsPerPage = 10;
-    let allPosts = [];
-    let filteredPosts = [];
-    
-    // Initialize admin panel
-    function initAdminPanel() {
-        // Load posts from localStorage
-        allPosts = JSON.parse(localStorage.getItem('blogPosts')) || getDefaultPosts();
-        filteredPosts = [...allPosts];
-        
-        // Set up tab functionality
-        setupTabs();
-        
-        // Set up form submission
-        setupFormSubmission();
-        
-        // Set up image upload simulation
-        setupImageUpload();
-        
-        // Set up search functionality
-        setupSearch();
-        
-        // Set up modal functionality
-        setupModal();
-        
-        // Load posts table
-        loadPostsTable();
-    }
-    
-    // Set up tab functionality
-    function setupTabs() {
-        const tabBtns = document.querySelectorAll('.tab-btn');
-        
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // Remove active class from all tabs
-                tabBtns.forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
-                });
-                
-                // Add active class to clicked tab
-                this.classList.add('active');
-                const tabId = this.getAttribute('data-tab');
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
-    }
-    
-    // Set up form submission
-    function setupFormSubmission() {
-        blogPostForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            createNewPost();
-        });
-        
-        editPostForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            updatePost();
-        });
-        
-        // Save as draft button
-        document.getElementById('save-draft-btn').addEventListener('click', function() {
-            createNewPost(true);
-        });
-    }
-    
-    // Create new blog post
-    function createNewPost(isDraft = false) {
-        const formData = new FormData(blogPostForm);
-        const title = formData.get('title');
-        const category = formData.get('category');
-        const author = formData.get('author');
-        const excerpt = formData.get('excerpt');
-        const content = formData.get('content');
-        const image = formData.get('image');
-        
-        // Validate form
-        if (!title || !category || !author || !excerpt || !content || !image) {
-            showMessage('Please fill in all required fields.', 'error');
-            return;
-        }
-        
-        // Create new post object
-        const newPost = {
-            id: generateId(),
-            title,
-            category,
-            author,
-            excerpt,
-            content,
-            image,
-            date: new Date().toISOString().split('T')[0],
-            status: isDraft ? 'draft' : 'published'
-        };
-        
-        // Add to posts array
-        allPosts.unshift(newPost);
-        
-        // Save to localStorage
-        localStorage.setItem('blogPosts', JSON.stringify(allPosts));
-        
-        // Show success message
-        showMessage(`Post ${isDraft ? 'saved as draft' : 'published'} successfully!`, 'success');
-        
-        // Reset form
-        blogPostForm.reset();
-        imagePreview.classList.remove('visible');
-        
-        // Update posts table if on manage tab
-        if (document.getElementById('manage-tab').classList.contains('active')) {
-            filteredPosts = [...allPosts];
-            loadPostsTable();
-        }
-    }
-    
-    // Update existing post
-    function updatePost() {
-        const formData = new FormData(editPostForm);
-        const postId = parseInt(document.getElementById('edit-post-id').value);
-        const title = formData.get('title');
-        const category = formData.get('category');
-        const author = formData.get('author');
-        const excerpt = formData.get('excerpt');
-        const content = formData.get('content');
-        const image = formData.get('image');
-        
-        // Find post index
-        const postIndex = allPosts.findIndex(post => post.id === postId);
-        
-        if (postIndex === -1) {
-            showMessage('Post not found.', 'error');
-            return;
-        }
-        
-        // Update post
-        allPosts[postIndex] = {
-            ...allPosts[postIndex],
-            title,
-            category,
-            author,
-            excerpt,
-            content,
-            image
-        };
-        
-        // Save to localStorage
-        localStorage.setItem('blogPosts', JSON.stringify(allPosts));
-        
-        // Show success message
-        showMessage('Post updated successfully!', 'success');
-        
-        // Close modal
-        closeModal();
-        
-        // Update posts table
-        filteredPosts = [...allPosts];
-        loadPostsTable();
-    }
-    
-    // Set up image upload simulation
-    function setupImageUpload() {
-        uploadImageBtn.addEventListener('click', function() {
-            // In a real application, this would open a file picker and upload to a server
-            // For this demo, we'll just show a prompt for a URL
-            const imageUrl = prompt('Enter image URL:');
-            if (imageUrl) {
-                document.getElementById('post-image').value = imageUrl;
-                updateImagePreview(imageUrl, imagePreview);
-            }
-        });
-        
-        // Update preview when URL changes
-        document.getElementById('post-image').addEventListener('input', function() {
-            if (this.value) {
-                updateImagePreview(this.value, imagePreview);
-            } else {
-                imagePreview.classList.remove('visible');
-            }
-        });
-        
-        // For edit form
-        document.getElementById('edit-post-image').addEventListener('input', function() {
-            if (this.value) {
-                updateImagePreview(this.value, editImagePreview);
-            } else {
-                editImagePreview.classList.remove('visible');
-            }
-        });
-    }
-    
-    // Update image preview
-    function updateImagePreview(url, previewElement) {
-        previewElement.innerHTML = `<img src="${url}" alt="Preview">`;
-        previewElement.classList.add('visible');
-    }
-    
-    // Set up search functionality
-    function setupSearch() {
-        postsSearch.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            
-            if (searchTerm) {
-                filteredPosts = allPosts.filter(post => 
-                    post.title.toLowerCase().includes(searchTerm) ||
-                    post.category.toLowerCase().includes(searchTerm) ||
-                    post.author.toLowerCase().includes(searchTerm)
-                );
-            } else {
-                filteredPosts = [...allPosts];
-            }
-            
-            currentPage = 1;
-            loadPostsTable();
-        });
-    }
-    
-    // Set up modal functionality
-    function setupModal() {
-        // Close modal when clicking X or cancel button
-        document.querySelectorAll('.close-modal').forEach(btn => {
-            btn.addEventListener('click', closeModal);
-        });
-        
-        // Close modal when clicking outside
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-    }
-    
-    // Open edit modal
-    function openEditModal(postId) {
-        const post = allPosts.find(p => p.id === postId);
-        
-        if (!post) {
-            showMessage('Post not found.', 'error');
-            return;
-        }
-        
-        // Fill form with post data
-        document.getElementById('edit-post-id').value = post.id;
-        document.getElementById('edit-post-title').value = post.title;
-        document.getElementById('edit-post-category').value = post.category;
-        document.getElementById('edit-post-author').value = post.author;
-        document.getElementById('edit-post-excerpt').value = post.excerpt;
-        document.getElementById('edit-post-content').value = post.content;
-        document.getElementById('edit-post-image').value = post.image;
-        
-        // Update image preview
-        if (post.image) {
-            updateImagePreview(post.image, editImagePreview);
+// DOM Elements
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+const blogPostForm = document.getElementById('blog-post-form');
+const saveDraftBtn = document.getElementById('save-draft');
+const postsTableBody = document.getElementById('posts-table-body');
+const postSearch = document.getElementById('post-search');
+const noPostsMessage = document.getElementById('no-posts');
+const editModal = document.getElementById('edit-modal');
+const editPostForm = document.getElementById('edit-post-form');
+const closeModalBtns = document.querySelectorAll('.close-modal');
+const uploadArea = document.getElementById('upload-area');
+const imageUpload = document.getElementById('image-upload');
+const imagePreview = document.getElementById('image-preview');
+const createFirstPostLink = document.querySelector('.create-first-post');
+
+// Initialize blog posts from localStorage
+let blogPosts = JSON.parse(localStorage.getItem('crownlinksBlogPosts')) || [];
+
+// Tab switching
+function switchTab(tabName) {
+    // Update tab buttons
+    tabBtns.forEach(btn => {
+        if (btn.dataset.tab === tabName) {
+            btn.classList.add('active');
         } else {
-            editImagePreview.classList.remove('visible');
+            btn.classList.remove('active');
         }
-        
-        // Show modal
-        modal.classList.add('active');
-    }
+    });
     
-    // Close modal
-    function closeModal() {
-        modal.classList.remove('active');
-    }
+    // Update tab content
+    tabContents.forEach(content => {
+        if (content.id === `${tabName}-tab`) {
+            content.classList.add('active');
+        } else {
+            content.classList.remove('active');
+        }
+    });
     
-    // Load posts table
-    function loadPostsTable() {
-        // Calculate pagination
-        const startIndex = (currentPage - 1) * postsPerPage;
-        const endIndex = startIndex + postsPerPage;
-        const postsToShow = filteredPosts.slice(startIndex, endIndex);
-        
-        // Clear table
-        postsTableBody.innerHTML = '';
-        
-        if (postsToShow.length === 0) {
-            postsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: center; padding: 40px;">
-                        No posts found.
-                    </td>
-                </tr>
-            `;
-            postsPagination.innerHTML = '';
-            return;
-        }
-        
-        // Add posts to table
-        postsToShow.forEach(post => {
-            const row = document.createElement('tr');
-            
-            // Format date
-            const date = new Date(post.date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-            
-            row.innerHTML = `
-                <td>${post.title}</td>
-                <td>${post.category}</td>
-                <td>${date}</td>
-                <td>
-                    <span class="post-status status-${post.status || 'published'}">
-                        ${(post.status || 'published').charAt(0).toUpperCase() + (post.status || 'published').slice(1)}
-                    </span>
-                </td>
-                <td>
-                    <div class="post-actions">
-                        <button class="action-btn edit-btn" data-id="${post.id}" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn delete-btn" data-id="${post.id}" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-            
-            postsTableBody.appendChild(row);
-        });
-        
-        // Set up action buttons
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const postId = parseInt(this.getAttribute('data-id'));
-                openEditModal(postId);
-            });
-        });
-        
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const postId = parseInt(this.getAttribute('data-id'));
-                deletePost(postId);
-            });
-        });
-        
-        // Set up pagination
-        setupPagination();
-    }
-    
-    // Set up pagination
-    function setupPagination() {
-        const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-        
-        if (totalPages <= 1) {
-            postsPagination.innerHTML = '';
-            return;
-        }
-        
-        let paginationHTML = '';
-        
-        // Previous button
-        paginationHTML += `
-            <button class="pagination-btn prev-btn" ${currentPage === 1 ? 'disabled' : ''}>
-                <i class="fas fa-chevron-left"></i>
-            </button>
-        `;
-        
-        // Page numbers
-        for (let i = 1; i <= totalPages; i++) {
-            paginationHTML += `
-                <button class="pagination-btn ${i === currentPage ? 'active' : ''}">
-                    ${i}
-                </button>
-            `;
-        }
-        
-        // Next button
-        paginationHTML += `
-            <button class="pagination-btn next-btn" ${currentPage === totalPages ? 'disabled' : ''}>
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        `;
-        
-        postsPagination.innerHTML = paginationHTML;
-        
-        // Set up pagination event listeners
-        document.querySelector('.prev-btn').addEventListener('click', function() {
-            if (currentPage > 1) {
-                currentPage--;
-                loadPostsTable();
-            }
-        });
-        
-        document.querySelector('.next-btn').addEventListener('click', function() {
-            if (currentPage < totalPages) {
-                currentPage++;
-                loadPostsTable();
-            }
-        });
-        
-        document.querySelectorAll('.pagination-btn:not(.prev-btn):not(.next-btn)').forEach(btn => {
-            btn.addEventListener('click', function() {
-                currentPage = parseInt(this.textContent);
-                loadPostsTable();
-            });
-        });
-    }
-    
-    // Delete post
-    function deletePost(postId) {
-        if (!confirm('Are you sure you want to delete this post?')) {
-            return;
-        }
-        
-        // Remove post from array
-        allPosts = allPosts.filter(post => post.id !== postId);
-        
-        // Save to localStorage
-        localStorage.setItem('blogPosts', JSON.stringify(allPosts));
-        
-        // Show success message
-        showMessage('Post deleted successfully!', 'success');
-        
-        // Update posts table
-        filteredPosts = [...allPosts];
+    // If switching to manage tab, refresh the table
+    if (tabName === 'manage') {
         loadPostsTable();
     }
+}
+
+// Generate unique ID for new posts
+function generateId() {
+    return blogPosts.length > 0 ? Math.max(...blogPosts.map(post => post.id)) + 1 : 1;
+}
+
+// Handle blog post form submission
+function handleBlogPostSubmit(e, isDraft = false) {
+    e.preventDefault();
     
-    // Show message
-    function showMessage(message, type) {
-        formMessage.textContent = message;
-        formMessage.className = `form-message ${type}`;
+    const formData = new FormData(e.target);
+    const postData = {
+        id: generateId(),
+        title: formData.get('title'),
+        category: formData.get('category'),
+        author: formData.get('author'),
+        excerpt: formData.get('excerpt'),
+        content: formData.get('content'),
+        image: formData.get('image') || 'assets/blog-default.jpg',
+        date: new Date().toISOString().split('T')[0],
+        status: isDraft ? 'draft' : 'published'
+    };
+    
+    // Add to blog posts array
+    blogPosts.unshift(postData);
+    
+    // Save to localStorage
+    localStorage.setItem('crownlinksBlogPosts', JSON.stringify(blogPosts));
+    
+    // Show success message
+    alert(isDraft ? 'Post saved as draft!' : 'Post published successfully!');
+    
+    // Reset form
+    e.target.reset();
+    
+    // Switch to manage tab
+    switchTab('manage');
+}
+
+// Load posts into the management table
+function loadPostsTable(filter = '') {
+    const filteredPosts = blogPosts.filter(post => 
+        post.title.toLowerCase().includes(filter.toLowerCase()) ||
+        post.category.toLowerCase().includes(filter.toLowerCase()) ||
+        post.author.toLowerCase().includes(filter.toLowerCase())
+    );
+    
+    if (filteredPosts.length === 0) {
+        postsTableBody.innerHTML = '';
+        noPostsMessage.style.display = 'block';
+        return;
+    }
+    
+    noPostsMessage.style.display = 'none';
+    
+    postsTableBody.innerHTML = filteredPosts.map(post => `
+        <tr>
+            <td class="post-title-cell">
+                <a href="blog-post.html?id=${post.id}" class="post-title" target="_blank">${post.title}</a>
+            </td>
+            <td>
+                <span class="post-category">${post.category.replace('-', ' ')}</span>
+            </td>
+            <td>${formatDate(post.date)}</td>
+            <td>
+                <span class="status-${post.status}">${post.status === 'published' ? 'Published' : 'Draft'}</span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="action-btn edit-btn" data-id="${post.id}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="action-btn delete-btn" data-id="${post.id}">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                    <a href="blog-post.html?id=${post.id}" class="action-btn view-btn" target="_blank">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    // Add event listeners to action buttons
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => openEditModal(parseInt(btn.dataset.id)));
+    });
+    
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => deletePost(parseInt(btn.dataset.id)));
+    });
+}
+
+// Format date for display
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+}
+
+// Open edit modal with post data
+function openEditModal(postId) {
+    const post = blogPosts.find(p => p.id === postId);
+    
+    if (!post) return;
+    
+    // Fill form with post data
+    document.getElementById('edit-post-id').value = post.id;
+    document.getElementById('edit-post-title').value = post.title;
+    document.getElementById('edit-post-category').value = post.category;
+    document.getElementById('edit-post-excerpt').value = post.excerpt;
+    document.getElementById('edit-post-content').value = post.content;
+    document.getElementById('edit-post-image').value = post.image;
+    
+    // Show modal
+    editModal.classList.add('active');
+}
+
+// Handle edit form submission
+function handleEditPostSubmit(e) {
+    e.preventDefault();
+    
+    const postId = parseInt(document.getElementById('edit-post-id').value);
+    const postIndex = blogPosts.findIndex(p => p.id === postId);
+    
+    if (postIndex === -1) return;
+    
+    // Update post data
+    blogPosts[postIndex] = {
+        ...blogPosts[postIndex],
+        title: document.getElementById('edit-post-title').value,
+        category: document.getElementById('edit-post-category').value,
+        excerpt: document.getElementById('edit-post-excerpt').value,
+        content: document.getElementById('edit-post-content').value,
+        image: document.getElementById('edit-post-image').value
+    };
+    
+    // Save to localStorage
+    localStorage.setItem('crownlinksBlogPosts', JSON.stringify(blogPosts));
+    
+    // Close modal and refresh table
+    closeModal();
+    loadPostsTable();
+    
+    alert('Post updated successfully!');
+}
+
+// Delete post
+function deletePost(postId) {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+    
+    blogPosts = blogPosts.filter(post => post.id !== postId);
+    localStorage.setItem('crownlinksBlogPosts', JSON.stringify(blogPosts));
+    loadPostsTable();
+    
+    alert('Post deleted successfully!');
+}
+
+// Close modal
+function closeModal() {
+    editModal.classList.remove('active');
+}
+
+// Handle image upload
+function handleImageUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Check if file is an image
+    if (!file.type.match('image.*')) {
+        alert('Please select an image file.');
+        return;
+    }
+    
+    // Create a preview (in a real app, you would upload to a server)
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        imagePreview.style.display = 'block';
         
-        // Hide message after 5 seconds
-        setTimeout(() => {
-            formMessage.style.display = 'none';
-        }, 5000);
+        // Set the image URL in the form (in a real app, this would be the uploaded image URL)
+        document.getElementById('post-image').value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Tab switching
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    
+    // Blog post form
+    blogPostForm.addEventListener('submit', (e) => handleBlogPostSubmit(e, false));
+    saveDraftBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleBlogPostSubmit(new Event('submit'), true);
+    });
+    
+    // Search functionality
+    postSearch.addEventListener('input', (e) => {
+        loadPostsTable(e.target.value);
+    });
+    
+    // Edit post form
+    editPostForm.addEventListener('submit', handleEditPostSubmit);
+    
+    // Modal close buttons
+    closeModalBtns.forEach(btn => {
+        btn.addEventListener('click', closeModal);
+    });
+    
+    // Image upload
+    uploadArea.addEventListener('click', () => imageUpload.click());
+    imageUpload.addEventListener('change', handleImageUpload);
+    
+    // Create first post link
+    if (createFirstPostLink) {
+        createFirstPostLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab('create');
+        });
     }
     
-    // Generate unique ID
-    function generateId() {
-        return Date.now() + Math.floor(Math.random() * 1000);
+    // Load initial data
+    loadPostsTable();
+});
+
+// Close modal when clicking outside
+editModal.addEventListener('click', (e) => {
+    if (e.target === editModal) {
+        closeModal();
     }
-    
-    // Initialize
-    initAdminPanel();
 });
