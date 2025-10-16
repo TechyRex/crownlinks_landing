@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Blog - Crownlinks Education Consultancy</title>
+    <title>Crownlinks - Admin Blog</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="adminblog.css">
+    <link rel="stylesheet" href="blog.css">
     <link rel="icon" href="assets/logo.png" type="image/png">
 </head>
 <body>
@@ -15,14 +15,13 @@
         <div class="container">
             <div class="logo">
                 <img src="assets/logo.png" alt="Crownlinks Logo">
-                <span>Crownlinks Consult</span>
             </div>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#services">Services</a></li>
                 <li><a href="index.html#admission">Admission Updates</a></li>
-                <li><a href="blog.html">Blog</a></li>
                 <li><a href="index.html#testimonials">Testimonials</a></li>
+                <li><a href="blog.html">Blog</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
                 <li><a href="adminblog.html" class="active">Admin</a></li>
             </ul>
@@ -32,112 +31,98 @@
         </div>
     </nav>
 
-    <!-- Admin Header -->
+    <!-- Admin Blog Header -->
     <section class="admin-header">
         <div class="container">
             <h1>Blog Management</h1>
-            <p>Create, edit, and manage blog posts for Crownlinks Education Consultancy</p>
+            <p>Create, edit, and manage blog posts</p>
         </div>
     </section>
 
-    <!-- Admin Content -->
-    <section class="admin-content">
+    <!-- Admin Blog Content -->
+    <section class="admin-blog-content">
         <div class="container">
             <div class="admin-tabs">
                 <button class="tab-btn active" data-tab="create">Create New Post</button>
                 <button class="tab-btn" data-tab="manage">Manage Posts</button>
             </div>
-
+            
             <!-- Create Post Form -->
-            <div id="create-tab" class="tab-content active">
-                <form id="blog-post-form" class="blog-post-form">
+            <div class="tab-content active" id="create-tab">
+                <form id="blog-form" class="blog-form">
                     <div class="form-group">
                         <label for="post-title">Post Title</label>
                         <input type="text" id="post-title" name="title" required>
                     </div>
-
+                    
+                    <div class="form-group">
+                        <label for="post-excerpt">Short Description/Excerpt</label>
+                        <textarea id="post-excerpt" name="excerpt" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="post-content">Content</label>
+                        <textarea id="post-content" name="content" rows="10" required></textarea>
+                    </div>
+                    
                     <div class="form-row">
                         <div class="form-group">
                             <label for="post-category">Category</label>
                             <select id="post-category" name="category" required>
                                 <option value="">Select Category</option>
-                                <option value="admissions">Admissions</option>
+                                <option value="admission-tips">Admission Tips</option>
+                                <option value="university-guides">University Guides</option>
                                 <option value="study-tips">Study Tips</option>
-                                <option value="university-news">University News</option>
-                                <option value="career-guidance">Career Guidance</option>
+                                <option value="career-advice">Career Advice</option>
+                                <option value="news">News & Updates</option>
                             </select>
                         </div>
+                        
                         <div class="form-group">
                             <label for="post-author">Author</label>
-                            <input type="text" id="post-author" name="author" value="Crownlinks Team" required>
+                            <input type="text" id="post-author" name="author" required>
                         </div>
                     </div>
-
+                    
                     <div class="form-group">
-                        <label for="post-excerpt">Excerpt</label>
-                        <textarea id="post-excerpt" name="excerpt" rows="3" required></textarea>
-                        <small>Brief description that will appear on the blog listing page</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="post-content">Content</label>
-                        <textarea id="post-content" name="content" rows="10" required></textarea>
-                        <small>You can use HTML tags for formatting</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="post-image">Featured Image URL</label>
-                        <input type="text" id="post-image" name="image" placeholder="https://example.com/image.jpg">
-                        <small>Or upload an image below</small>
-                    </div>
-
-                    <div class="form-group image-upload">
-                        <label>Upload Image</label>
-                        <div class="upload-area" id="upload-area">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <p>Click to upload or drag and drop</p>
-                            <input type="file" id="image-upload" accept="image/*">
+                        <label for="post-image">Featured Image</label>
+                        <div class="image-upload">
+                            <input type="file" id="post-image" name="image" accept="image/*">
+                            <div class="image-preview" id="imagePreview">
+                                <i class="fas fa-image"></i>
+                                <p>No image selected</p>
+                            </div>
+                            <button type="button" id="upload-btn" class="btn secondary">
+                                <i class="fas fa-upload"></i> Upload Image
+                            </button>
                         </div>
-                        <div id="image-preview" class="image-preview"></div>
                     </div>
-
+                    
                     <div class="form-actions">
                         <button type="submit" class="btn primary">Publish Post</button>
                         <button type="button" id="save-draft" class="btn secondary">Save as Draft</button>
                         <button type="reset" class="btn outline">Reset Form</button>
                     </div>
                 </form>
+                
+                <div id="form-message" class="form-message"></div>
             </div>
-
+            
             <!-- Manage Posts -->
-            <div id="manage-tab" class="tab-content">
-                <div class="posts-header">
-                    <h3>All Blog Posts</h3>
-                    <div class="search-box">
-                        <input type="text" id="post-search" placeholder="Search posts...">
-                        <i class="fas fa-search"></i>
-                    </div>
+            <div class="tab-content" id="manage-tab">
+                <div class="posts-list" id="postsList">
+                    <!-- Blog posts will be dynamically loaded here -->
                 </div>
-
-                <div class="posts-table-container">
-                    <table class="posts-table">
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Category</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="posts-table-body">
-                            <!-- Posts will be dynamically loaded here -->
-                        </tbody>
-                    </table>
+                
+                <div class="posts-loading" id="postsLoading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading posts...</p>
                 </div>
-
-                <div id="no-posts" class="no-posts" style="display: none;">
-                    <p>No blog posts found. <a href="#" class="create-first-post">Create your first post</a></p>
+                
+                <div class="no-posts" id="noPosts" style="display: none;">
+                    <i class="fas fa-newspaper"></i>
+                    <h3>No blog posts yet</h3>
+                    <p>Create your first blog post to get started.</p>
                 </div>
             </div>
         </div>
@@ -167,8 +152,8 @@
                         <li><a href="index.html">Home</a></li>
                         <li><a href="index.html#services">Services</a></li>
                         <li><a href="index.html#admission">Admission Updates</a></li>
+                        <li><a href="index.html#testimonials">Testimonials</a></li>
                         <li><a href="blog.html">Blog</a></li>
-                        <li><a href="index.html#contact">Contact</a></li>
                     </ul>
                 </div>
                 
@@ -203,49 +188,7 @@
         </div>
     </footer>
 
-    <!-- Edit Post Modal -->
-    <div id="edit-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Edit Blog Post</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <form id="edit-post-form" class="blog-post-form">
-                <input type="hidden" id="edit-post-id">
-                <div class="form-group">
-                    <label for="edit-post-title">Post Title</label>
-                    <input type="text" id="edit-post-title" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="edit-post-category">Category</label>
-                    <select id="edit-post-category" name="category" required>
-                        <option value="admissions">Admissions</option>
-                        <option value="study-tips">Study Tips</option>
-                        <option value="university-news">University News</option>
-                        <option value="career-guidance">Career Guidance</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="edit-post-excerpt">Excerpt</label>
-                    <textarea id="edit-post-excerpt" name="excerpt" rows="3" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="edit-post-content">Content</label>
-                    <textarea id="edit-post-content" name="content" rows="10" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="edit-post-image">Featured Image URL</label>
-                    <input type="text" id="edit-post-image" name="image">
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn primary">Update Post</button>
-                    <button type="button" class="btn outline close-modal">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script src="script.js"></script>
-    <script src="adminblog.js"></script>
+    <script src="blog.js"></script>
 </body>
 </html>
