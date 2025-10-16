@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Post - Crownlinks Education Consultancy</title>
+    <title>Crownlinks - Blog Post</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="blog.css">
@@ -15,16 +15,14 @@
         <div class="container">
             <div class="logo">
                 <img src="assets/logo.png" alt="Crownlinks Logo">
-                <span>Crownlinks Consult</span>
             </div>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#services">Services</a></li>
                 <li><a href="index.html#admission">Admission Updates</a></li>
-                <li><a href="blog.html">Blog</a></li>
                 <li><a href="index.html#testimonials">Testimonials</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
-                <li><a href="adminblog.html">Admin</a></li>
             </ul>
             <div class="hamburger">
                 <i class="fas fa-bars"></i>
@@ -33,109 +31,23 @@
     </nav>
 
     <!-- Blog Post Content -->
-    <section class="blog-post">
+    <section class="blog-post-content">
         <div class="container">
-            <div class="blog-post-content">
-                <div class="blog-post-header">
-                    <nav class="breadcrumb">
-                        <a href="index.html">Home</a> / 
-                        <a href="blog.html">Blog</a> / 
-                        <span id="breadcrumb-category">Category</span>
-                    </nav>
-                    <h1 id="blog-post-title">Blog Post Title</h1>
-                    <div class="blog-post-meta">
-                        <div class="post-author">
-                            <i class="fas fa-user"></i>
-                            <span id="post-author">Author Name</span>
-                        </div>
-                        <div class="post-date">
-                            <i class="far fa-calendar"></i>
-                            <span id="post-date">October 15, 2023</span>
-                        </div>
-                        <div class="post-category">
-                            <i class="fas fa-tag"></i>
-                            <span id="post-category">Category</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="blog-post-image">
-                    <img id="post-image" src="" alt="Blog Post Image">
-                </div>
-
-                <div class="blog-post-body" id="blog-post-body">
-                    <!-- Blog content will be dynamically loaded here -->
-                </div>
-
-                <div class="blog-post-footer">
-                    <div class="post-tags">
-                        <span>Tags:</span>
-                        <div id="post-tags"></div>
-                    </div>
-                    <div class="social-share">
-                        <span>Share:</span>
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
-                    </div>
-                </div>
-
-                <div class="blog-navigation">
-                    <a href="#" id="prev-post" class="nav-link prev">
-                        <i class="fas fa-arrow-left"></i>
-                        <div class="nav-text">
-                            <span>Previous Post</span>
-                            <h4 id="prev-title">Previous Post Title</h4>
-                        </div>
-                    </a>
-                    <a href="blog.html" class="back-to-blog">
-                        <i class="fas fa-th-large"></i>
-                        Back to Blog
-                    </a>
-                    <a href="#" id="next-post" class="nav-link next">
-                        <div class="nav-text">
-                            <span>Next Post</span>
-                            <h4 id="next-title">Next Post Title</h4>
-                        </div>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+            <div class="blog-post" id="blogPost">
+                <!-- Blog post will be dynamically loaded here -->
             </div>
-
-            <!-- Sidebar -->
-            <aside class="blog-sidebar">
-                <div class="sidebar-widget">
-                    <h3>About Crownlinks</h3>
-                    <p>Crownlinks Consult is a leading education consultancy service in Nigeria, helping students navigate university admissions and academic challenges.</p>
-                </div>
-
-                <div class="sidebar-widget">
-                    <h3>Categories</h3>
-                    <ul class="category-list">
-                        <li><a href="blog.html?filter=admissions">Admissions</a></li>
-                        <li><a href="blog.html?filter=study-tips">Study Tips</a></li>
-                        <li><a href="blog.html?filter=university-news">University News</a></li>
-                        <li><a href="blog.html?filter=career-guidance">Career Guidance</a></li>
-                    </ul>
-                </div>
-
-                <div class="sidebar-widget">
-                    <h3>Recent Posts</h3>
-                    <div id="recent-posts">
-                        <!-- Recent posts will be dynamically loaded here -->
-                    </div>
-                </div>
-
-                <div class="sidebar-widget">
-                    <h3>Subscribe</h3>
-                    <p>Get the latest educational insights delivered to your inbox.</p>
-                    <form class="sidebar-newsletter">
-                        <input type="email" placeholder="Your email address" required>
-                        <button type="submit" class="btn primary">Subscribe</button>
-                    </form>
-                </div>
-            </aside>
+            
+            <div class="blog-loading" id="blogLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading blog post...</p>
+            </div>
+            
+            <div class="post-not-found" id="postNotFound" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Blog post not found</h3>
+                <p>The blog post you're looking for doesn't exist or has been removed.</p>
+                <a href="blog.html" class="btn primary">Back to Blog</a>
+            </div>
         </div>
     </section>
 
@@ -163,8 +75,8 @@
                         <li><a href="index.html">Home</a></li>
                         <li><a href="index.html#services">Services</a></li>
                         <li><a href="index.html#admission">Admission Updates</a></li>
+                        <li><a href="index.html#testimonials">Testimonials</a></li>
                         <li><a href="blog.html">Blog</a></li>
-                        <li><a href="index.html#contact">Contact</a></li>
                     </ul>
                 </div>
                 
@@ -200,6 +112,6 @@
     </footer>
 
     <script src="script.js"></script>
-    <script src="blog-post.js"></script>
+    <script src="blog.js"></script>
 </body>
 </html>
