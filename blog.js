@@ -1,148 +1,358 @@
-// Blog data structure (in a real app, this would come from a backend)
-let blogPosts = JSON.parse(localStorage.getItem('crownlinksBlogPosts')) || [
-    {
-        id: 1,
-        title: "Understanding JAMB Cut-off Marks for 2023 Admissions",
-        excerpt: "Learn about the latest JAMB cut-off marks and how they affect your chances of admission into Nigerian universities.",
-        content: "<p>This is the full content of the blog post about JAMB cut-off marks...</p>",
-        category: "admissions",
-        date: "2023-10-15",
-        image: "assets/blog-jamb.jpg",
-        author: "Crownlinks Team",
-        featured: true
-    },
-    {
-        id: 2,
-        title: "5 Effective Study Techniques for University Students",
-        excerpt: "Discover proven study methods that can help you excel in your university courses and improve your academic performance.",
-        content: "<p>This is the full content of the blog post about study techniques...</p>",
-        category: "study-tips",
-        date: "2023-10-10",
-        image: "assets/blog-study.jpg",
-        author: "Crownlinks Team",
-        featured: false
-    },
-    {
-        id: 3,
-        title: "New Universities Approved by NUC in 2023",
-        excerpt: "Get the latest information on newly approved universities in Nigeria and what this means for prospective students.",
-        content: "<p>This is the full content of the blog post about new universities...</p>",
-        category: "university-news",
-        date: "2023-10-05",
-        image: "assets/blog-university.jpg",
-        author: "Crownlinks Team",
-        featured: false
+// Blog JavaScript
+
+// Blog data storage (in a real app, this would be a database)
+let blogPosts = JSON.parse(localStorage.getItem('crownlinks_blog_posts')) || [];
+
+// DOM elements
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize based on current page
+    const path = window.location.pathname;
+    
+    if (path.includes('blog.html') || path.endsWith('/')) {
+        // Blog listing page
+        loadBlogPosts();
+    } else if (path.includes('blog-post.html')) {
+        // Individual blog post page
+        loadBlogPost();
+    } else if (path.includes('adminblog.html')) {
+        // Admin page
+        initializeAdminPage();
     }
-];
+});
 
-// DOM Elements
-const blogGrid = document.getElementById('blogGrid');
-const filterBtns = document.querySelectorAll('.filter-btn');
-const loadMoreBtn = document.getElementById('loadMoreBtn');
-
-// Initialize variables
-let currentFilter = 'all';
-let visiblePosts = 6;
-const postsPerLoad = 6;
-
-// Format date
-function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
+// Load blog posts for listing page
+function loadBlogPosts() {
+    const blogGrid = document.getElementById('blogGrid');
+    const blogLoading = document.getElementById('blogLoading');
+    const noPosts = document.getElementById('noPosts');
+    
+    if (!blogGrid) return;
+    
+    // Simulate loading delay
+    setTimeout(() => {
+        blogLoading.style.display = 'none';
+        
+        if (blogPosts.length === 0) {
+            noPosts.style.display = 'block';
+            return;
+        }
+        
+        // Sort posts by date (newest first)
+        const sortedPosts = [...blogPosts].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Generate blog post cards
+        blogGrid.innerHTML = sortedPosts.map(post => `
+            <div class="blog-card">
+                <div class="blog-card-image">
+                    <img src="${post.image || 'assets/blog-placeholder.jpg'}" alt="${post.title}">
+                </div>
+                <div class="blog-card-content">
+                    <span class="blog-card-category">${post.category}</span>
+                    <h3 class="blog-card-title">
+                        <a href="blog-post.html?id=${post.id}">${post.title}</a>
+                    </h3>
+                    <p class="blog-card-excerpt">${post.excerpt}</p>
+                    <div class="blog-card-meta">
+                        <div class="blog-card-author">
+                            <img src="assets/author-placeholder.jpg" alt="${post.author}">
+                            <span>${post.author}</span>
+                        </div>
+                        <span>${formatDate(post.date)}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }, 1000);
 }
 
-// Generate blog card HTML
-function generateBlogCard(post) {
-    return `
-        <div class="blog-card" data-category="${post.category}">
-            <div class="blog-card-image">
-                <img src="${post.image}" alt="${post.title}">
-            </div>
-            <div class="blog-card-content">
-                <div class="blog-card-meta">
-                    <span class="blog-card-category">${post.category.replace('-', ' ')}</span>
-                    <span class="blog-card-date">
-                        <i class="far fa-calendar"></i> ${formatDate(post.date)}
-                    </span>
+// Load individual blog post
+function loadBlogPost() {
+    const blogPost = document.getElementById('blogPost');
+    const blogLoading = document.getElementById('blogLoading');
+    const postNotFound = document.getElementById('postNotFound');
+    
+    if (!blogPost) return;
+    
+    // Get post ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+    
+    // Simulate loading delay
+    setTimeout(() => {
+        blogLoading.style.display = 'none';
+        
+        if (!postId) {
+            postNotFound.style.display = 'block';
+            return;
+        }
+        
+        const post = blogPosts.find(p => p.id === postId);
+        
+        if (!post) {
+            postNotFound.style.display = 'block';
+            return;
+        }
+        
+        // Generate blog post content
+        blogPost.innerHTML = `
+            <div class="post-header">
+                <span class="post-category">${post.category}</span>
+                <h1 class="post-title">${post.title}</h1>
+                <div class="post-meta">
+                    <div class="post-author">
+                        <img src="assets/author-placeholder.jpg" alt="${post.author}">
+                        <span>By ${post.author}</span>
+                    </div>
+                    <span>${formatDate(post.date)}</span>
                 </div>
-                <h3 class="blog-card-title">
-                    <a href="blog-post.html?id=${post.id}">${post.title}</a>
-                </h3>
-                <p class="blog-card-excerpt">${post.excerpt}</p>
-                <div class="blog-card-footer">
-                    <span class="author">By ${post.author}</span>
-                    <a href="blog-post.html?id=${post.id}" class="read-more">
-                        Read More <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
             </div>
+            <div class="post-image">
+                <img src="${post.image || 'assets/blog-placeholder.jpg'}" alt="${post.title}">
+            </div>
+            <div class="post-content">
+                ${post.content}
+            </div>
+            <div class="post-actions">
+                <a href="blog.html" class="back-to-blog">
+                    <i class="fas fa-arrow-left"></i> Back to Blog
+                </a>
+            </div>
+        `;
+    }, 1000);
+}
+
+// Initialize admin page
+function initializeAdminPage() {
+    // Tab functionality
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            
+            // Update active tab button
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Show active tab content
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${tabId}-tab`) {
+                    content.classList.add('active');
+                }
+            });
+            
+            // Load posts if manage tab is active
+            if (tabId === 'manage') {
+                loadAdminPosts();
+            }
+        });
+    });
+    
+    // Image upload preview
+    const imageInput = document.getElementById('post-image');
+    const imagePreview = document.getElementById('imagePreview');
+    const uploadBtn = document.getElementById('upload-btn');
+    
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', () => {
+            imageInput.click();
+        });
+    }
+    
+    if (imageInput) {
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Blog form submission
+    const blogForm = document.getElementById('blog-form');
+    const formMessage = document.getElementById('form-message');
+    
+    if (blogForm) {
+        blogForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveBlogPost(false);
+        });
+        
+        // Save as draft
+        const saveDraftBtn = document.getElementById('save-draft');
+        if (saveDraftBtn) {
+            saveDraftBtn.addEventListener('click', function() {
+                saveBlogPost(true);
+            });
+        }
+    }
+    
+    // Load posts for management
+    loadAdminPosts();
+}
+
+// Save blog post
+function saveBlogPost(isDraft = false) {
+    const form = document.getElementById('blog-form');
+    const formMessage = document.getElementById('form-message');
+    
+    const formData = new FormData(form);
+    const imageInput = document.getElementById('post-image');
+    
+    // Get image as base64 if selected
+    let imageBase64 = null;
+    if (imageInput.files.length > 0) {
+        const file = imageInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imageBase64 = e.target.result;
+            completeSave(formData, imageBase64, isDraft, formMessage);
+        };
+        reader.readAsDataURL(file);
+    } else {
+        completeSave(formData, null, isDraft, formMessage);
+    }
+}
+
+function completeSave(formData, imageBase64, isDraft, formMessage) {
+    const newPost = {
+        id: generateId(),
+        title: formData.get('title'),
+        excerpt: formData.get('excerpt'),
+        content: formData.get('content'),
+        category: formData.get('category'),
+        author: formData.get('author'),
+        image: imageBase64,
+        date: new Date().toISOString(),
+        status: isDraft ? 'draft' : 'published'
+    };
+    
+    // Add to posts array
+    blogPosts.push(newPost);
+    
+    // Save to localStorage
+    localStorage.setItem('crownlinks_blog_posts', JSON.stringify(blogPosts));
+    
+    // Show success message
+    formMessage.innerHTML = `
+        <div class="message success">
+            <i class="fas fa-check-circle"></i>
+            <p>Blog post ${isDraft ? 'saved as draft' : 'published'} successfully!</p>
         </div>
     `;
+    
+    // Reset form
+    document.getElementById('blog-form').reset();
+    document.getElementById('imagePreview').innerHTML = `
+        <i class="fas fa-image"></i>
+        <p>No image selected</p>
+    `;
+    
+    // Scroll to message
+    formMessage.scrollIntoView({ behavior: 'smooth' });
+    
+    // Hide message after 5 seconds
+    setTimeout(() => {
+        formMessage.innerHTML = '';
+    }, 5000);
 }
 
-// Display blog posts
-function displayBlogPosts() {
-    blogGrid.innerHTML = '';
+// Load posts for admin management
+function loadAdminPosts() {
+    const postsList = document.getElementById('postsList');
+    const postsLoading = document.getElementById('postsLoading');
+    const noPosts = document.getElementById('noPosts');
     
-    // Filter posts
-    let filteredPosts = blogPosts;
-    if (currentFilter !== 'all') {
-        filteredPosts = blogPosts.filter(post => post.category === currentFilter);
-    }
+    if (!postsList) return;
     
-    // Limit visible posts
-    const postsToShow = filteredPosts.slice(0, visiblePosts);
-    
-    // Generate HTML
-    if (postsToShow.length === 0) {
-        blogGrid.innerHTML = '<p class="no-posts">No blog posts found for this category.</p>';
-    } else {
-        postsToShow.forEach(post => {
-            blogGrid.innerHTML += generateBlogCard(post);
-        });
-    }
-    
-    // Show/hide load more button
-    if (visiblePosts >= filteredPosts.length) {
-        loadMoreBtn.style.display = 'none';
-    } else {
-        loadMoreBtn.style.display = 'inline-block';
-    }
-}
-
-// Filter posts by category
-function filterPosts(category) {
-    currentFilter = category;
-    visiblePosts = postsPerLoad;
-    displayBlogPosts();
-    
-    // Update active filter button
-    filterBtns.forEach(btn => {
-        if (btn.dataset.filter === category) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
+    // Simulate loading delay
+    setTimeout(() => {
+        postsLoading.style.display = 'none';
+        
+        if (blogPosts.length === 0) {
+            noPosts.style.display = 'block';
+            return;
         }
-    });
+        
+        // Sort posts by date (newest first)
+        const sortedPosts = [...blogPosts].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Generate posts list
+        postsList.innerHTML = sortedPosts.map(post => `
+            <div class="post-item">
+                <div class="post-item-image">
+                    <img src="${post.image || 'assets/blog-placeholder.jpg'}" alt="${post.title}">
+                </div>
+                <div class="post-item-content">
+                    <div class="post-item-title">${post.title}</div>
+                    <div class="post-item-meta">
+                        ${formatDate(post.date)} • ${post.category} • 
+                        <span style="color: ${post.status === 'published' ? '#4caf50' : '#ff9800'}">
+                            ${post.status}
+                        </span>
+                    </div>
+                </div>
+                <div class="post-item-actions">
+                    <button class="btn-edit" onclick="editPost('${post.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-delete" onclick="deletePost('${post.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }, 1000);
 }
 
-// Load more posts
-function loadMorePosts() {
-    visiblePosts += postsPerLoad;
-    displayBlogPosts();
+// Edit post
+function editPost(postId) {
+    const post = blogPosts.find(p => p.id === postId);
+    if (!post) return;
+    
+    // Switch to create tab
+    document.querySelector('[data-tab="create"]').click();
+    
+    // Fill form with post data
+    document.getElementById('post-title').value = post.title;
+    document.getElementById('post-excerpt').value = post.excerpt;
+    document.getElementById('post-content').value = post.content;
+    document.getElementById('post-category').value = post.category;
+    document.getElementById('post-author').value = post.author;
+    
+    if (post.image) {
+        document.getElementById('imagePreview').innerHTML = `<img src="${post.image}" alt="Preview">`;
+    }
+    
+    // Update form to indicate editing
+    const form = document.getElementById('blog-form');
+    form.setAttribute('data-editing', postId);
+    
+    // Scroll to form
+    form.scrollIntoView({ behavior: 'smooth' });
 }
 
-// Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    displayBlogPosts();
-    
-    // Filter buttons
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterPosts(btn.dataset.filter);
-        });
-    });
-    
-    // Load more button
-    loadMoreBtn.addEventListener('click', loadMorePosts);
-});
+// Delete post
+function deletePost(postId) {
+    if (confirm('Are you sure you want to delete this blog post?')) {
+        blogPosts = blogPosts.filter(p => p.id !== postId);
+        localStorage.setItem('crownlinks_blog_posts', JSON.stringify(blogPosts));
+        loadAdminPosts();
+    }
+}
+
+// Utility functions
+function generateId() {
+    return 'post_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+}
