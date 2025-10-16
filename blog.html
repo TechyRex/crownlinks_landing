@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Crownlinks Education Consultancy</title>
+    <title>Crownlinks - Blog</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="blog.css">
@@ -15,16 +15,14 @@
         <div class="container">
             <div class="logo">
                 <img src="assets/logo.png" alt="Crownlinks Logo">
-                <span>Crownlinks Consult</span>
             </div>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#services">Services</a></li>
                 <li><a href="index.html#admission">Admission Updates</a></li>
-                <li><a href="blog.html" class="active">Blog</a></li>
                 <li><a href="index.html#testimonials">Testimonials</a></li>
+                <li><a href="blog.html" class="active">Blog</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
-                <li><a href="adminblog.html">Admin</a></li>
             </ul>
             <div class="hamburger">
                 <i class="fas fa-bars"></i>
@@ -35,28 +33,27 @@
     <!-- Blog Header -->
     <section class="blog-header">
         <div class="container">
-            <h1>Crownlinks Education Blog</h1>
-            <p>Insights, tips, and updates on Nigerian university admissions and academic success</p>
+            <h1>Crownlinks Blog</h1>
+            <p>Educational insights, admission tips, and university guidance</p>
         </div>
     </section>
 
     <!-- Blog Content -->
     <section class="blog-content">
         <div class="container">
-            <div class="blog-filters">
-                <button class="filter-btn active" data-filter="all">All Posts</button>
-                <button class="filter-btn" data-filter="admissions">Admissions</button>
-                <button class="filter-btn" data-filter="study-tips">Study Tips</button>
-                <button class="filter-btn" data-filter="university-news">University News</button>
-                <button class="filter-btn" data-filter="career-guidance">Career Guidance</button>
-            </div>
-
             <div class="blog-grid" id="blogGrid">
                 <!-- Blog posts will be dynamically loaded here -->
             </div>
-
-            <div class="load-more-container">
-                <button id="loadMoreBtn" class="btn primary">Load More Posts</button>
+            
+            <div class="blog-loading" id="blogLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading blog posts...</p>
+            </div>
+            
+            <div class="no-posts" id="noPosts" style="display: none;">
+                <i class="fas fa-newspaper"></i>
+                <h3>No blog posts yet</h3>
+                <p>Check back soon for educational articles and admission tips.</p>
             </div>
         </div>
     </section>
@@ -85,8 +82,8 @@
                         <li><a href="index.html">Home</a></li>
                         <li><a href="index.html#services">Services</a></li>
                         <li><a href="index.html#admission">Admission Updates</a></li>
+                        <li><a href="index.html#testimonials">Testimonials</a></li>
                         <li><a href="blog.html">Blog</a></li>
-                        <li><a href="index.html#contact">Contact</a></li>
                     </ul>
                 </div>
                 
