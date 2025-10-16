@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crownlinks - Blog</title>
+    <title>Blog - Crownlinks Education Consultancy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="blog.css">
@@ -24,7 +24,7 @@
                 <li><a href="blog.html" class="active">Blog</a></li>
                 <li><a href="index.html#testimonials">Testimonials</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
-                <li><a href="adminblog.html" class="admin-link">Admin</a></li>
+                <li><a href="adminblog.html">Admin</a></li>
             </ul>
             <div class="hamburger">
                 <i class="fas fa-bars"></i>
@@ -35,21 +35,28 @@
     <!-- Blog Header -->
     <section class="blog-header">
         <div class="container">
-            <h1>Crownlinks Blog</h1>
-            <p>Educational insights, admission tips, and university guidance</p>
+            <h1>Crownlinks Education Blog</h1>
+            <p>Insights, tips, and updates on Nigerian university admissions and academic success</p>
         </div>
     </section>
 
     <!-- Blog Content -->
     <section class="blog-content">
         <div class="container">
-            <div class="blog-grid" id="blogGrid">
-                <!-- Blog posts will be loaded here dynamically -->
+            <div class="blog-filters">
+                <button class="filter-btn active" data-filter="all">All Posts</button>
+                <button class="filter-btn" data-filter="admissions">Admissions</button>
+                <button class="filter-btn" data-filter="study-tips">Study Tips</button>
+                <button class="filter-btn" data-filter="university-news">University News</button>
+                <button class="filter-btn" data-filter="career-guidance">Career Guidance</button>
             </div>
-            
-            <!-- Load More Button -->
+
+            <div class="blog-grid" id="blogGrid">
+                <!-- Blog posts will be dynamically loaded here -->
+            </div>
+
             <div class="load-more-container">
-                <button id="loadMoreBtn" class="btn primary">Load More Articles</button>
+                <button id="loadMoreBtn" class="btn primary">Load More Posts</button>
             </div>
         </div>
     </section>
@@ -114,7 +121,7 @@
         </div>
     </footer>
 
-    <script src="blog.js"></script>
     <script src="script.js"></script>
+    <script src="blog.js"></script>
 </body>
 </html>
