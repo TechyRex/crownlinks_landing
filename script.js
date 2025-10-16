@@ -242,25 +242,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Add this to your existing script.js file
 
-// Blog functionality
-function initializeBlogFeatures() {
-    // Add blog link to navigation if it doesn't exist
-    const navLinks = document.querySelector('.nav-links');
-    if (navLinks && !document.querySelector('a[href="blog.html"]')) {
-        const blogLink = document.createElement('li');
-        blogLink.innerHTML = '<a href="blog.html">Blog</a>';
-        
-        // Insert before Testimonials link
-        const testimonialsLink = document.querySelector('a[href="#testimonials"]');
-        if (testimonialsLink) {
-            testimonialsLink.parentNode.parentNode.insertBefore(blogLink, testimonialsLink.parentNode);
-        }
-    }
-}
-
-// Call this function when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    initializeBlogFeatures();
-    
-    // Your existing code...
-});
