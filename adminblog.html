@@ -1,1 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Blog - Crownlinks</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="adminblog.css">
+    <link rel="icon" href="assets/logo.png" type="image/png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <img src="assets/logo.png" alt="Crownlinks Logo">
+                <span>Crownlinks Consult</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#services">Services</a></li>
+                <li><a href="index.html#admission">Admission Updates</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="index.html#testimonials">Testimonials</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="adminblog.html" class="admin-link active">Admin</a></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Admin Header -->
+    <section class="admin-header">
+        <div class="container">
+            <h1>Blog Admin Panel</h1>
+            <p>Create, edit, and manage blog posts</p>
+        </div>
+    </section>
+
+    <!-- Admin Content -->
+    <section class="admin-content">
+        <div class="container">
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="create-tab">Create New Post</button>
+                <button class="tab-btn" data-tab="manage-tab">Manage Posts</button>
+            </div>
+            
+            <!-- Create Post Tab -->
+            <div id="create-tab" class="tab-content active">
+                <form id="blog-post-form" class="blog-post-form">
+                    <div class="form-group">
+                        <label for="post-title">Post Title</label>
+                        <input type="text" id="post-title" name="title" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="post-category">Category</label>
+                            <select id="post-category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Admission Tips">Admission Tips</option>
+                                <option value="Admission Process">Admission Process</option>
+                                <option value="Academic Writing">Academic Writing</option>
+                                <option value="University News">University News</option>
+                                <option value="Study Tips">Study Tips</option>
+                                <option value="Career Guidance">Career Guidance</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="post-author">Author</label>
+                            <input type="text" id="post-author" name="author" value="Crownlinks Team" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="post-excerpt">Excerpt</label>
+                        <textarea id="post-excerpt" name="excerpt" rows="3" required></textarea>
+                        <small>Brief description that appears on blog listing (max 150 characters)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="post-content">Content</label>
+                        <textarea id="post-content" name="content" rows="12" required></textarea>
+                        <small>You can use HTML tags for formatting</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="post-image">Featured Image URL</label>
+                        <div class="image-input-group">
+                            <input type="text" id="post-image" name="image" placeholder="https://example.com/image.jpg" required>
+                            <button type="button" id="upload-image-btn" class="btn secondary">
+                                <i class="fas fa-upload"></i> Upload
+                            </button>
+                        </div>
+                        <div class="image-preview" id="imagePreview"></div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary">Publish Post</button>
+                        <button type="button" id="save-draft-btn" class="btn secondary">Save as Draft</button>
+                        <button type="reset" class="btn outline">Reset Form</button>
+                    </div>
+                </form>
+                
+                <div id="form-message" class="form-message"></div>
+            </div>
+            
+            <!-- Manage Posts Tab -->
+            <div id="manage-tab" class="tab-content">
+                <div class="posts-header">
+                    <h3>Manage Blog Posts</h3>
+                    <div class="posts-search">
+                        <input type="text" id="posts-search" placeholder="Search posts...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                
+                <div class="posts-table-container">
+                    <table class="posts-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="posts-table-body">
+                            <!-- Posts will be loaded here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="posts-pagination" id="postsPagination">
+                    <!-- Pagination will be added here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <div class="logo">
+                        <img src="assets/logo.png" alt="Crownlinks Logo">
+                        <span>Crownlinks Consult</span>
+                    </div>
+                    <p>Transforming education and inspiring potential through expert consultancy services for Nigerian university admissions and academic success.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="index.html#services">Services</a></li>
+                        <li><a href="index.html#admission">Admission Updates</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-services">
+                    <h4>Our Services</h4>
+                    <ul>
+                        <li><a href="#">University Admissions</a></li>
+                        <li><a href="#">Project Writing</a></li>
+                        <li><a href="#">Registration Assistance</a></li>
+                        <li><a href="#">WAEC Scratch Cards</a></li>
+                        <li><a href="#">Screening Preparation</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-newsletter">
+                    <h4>Newsletter</h4>
+                    <p>Subscribe to get admission updates and educational tips.</p>
+                    <form id="footer-newsletter-form">
+                        <input type="email" placeholder="Your Email" required>
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2023 Crownlinks Consult Limited. All Rights Reserved.</p>
+                <div class="legal-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Edit Post Modal -->
+    <div id="edit-post-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Blog Post</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-post-form">
+                    <input type="hidden" id="edit-post-id">
+                    <div class="form-group">
+                        <label for="edit-post-title">Post Title</label>
+                        <input type="text" id="edit-post-title" name="title" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-post-category">Category</label>
+                            <select id="edit-post-category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Admission Tips">Admission Tips</option>
+                                <option value="Admission Process">Admission Process</option>
+                                <option value="Academic Writing">Academic Writing</option>
+                                <option value="University News">University News</option>
+                                <option value="Study Tips">Study Tips</option>
+                                <option value="Career Guidance">Career Guidance</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit-post-author">Author</label>
+                            <input type="text" id="edit-post-author" name="author" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-post-excerpt">Excerpt</label>
+                        <textarea id="edit-post-excerpt" name="excerpt" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-post-content">Content</label>
+                        <textarea id="edit-post-content" name="content" rows="10" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-post-image">Featured Image URL</label>
+                        <input type="text" id="edit-post-image" name="image" required>
+                        <div class="image-preview" id="editImagePreview"></div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn primary">Update Post</button>
+                        <button type="button" class="btn outline close-modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="adminblog.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
